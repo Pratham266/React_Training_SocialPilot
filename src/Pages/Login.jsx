@@ -5,9 +5,13 @@ import React, { useState } from "react";
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
+
+  //{email,pass}    Object.hasown(email)
   const [showPassword, setShowPassword] = useState(false);
+
   const countryLanguages = [
     { flag: "France.png", name: "French" },
     { flag: "germany.png", name: "German" },
@@ -27,7 +31,7 @@ const Login = () => {
   const isValidEmail = (email) => {
     console.log(email);
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    console.log("emailregex", emailRegex.test(email));
+    // console.log("emailregex", emailRegex.test(email));
 
     return emailRegex.test(email);
   };
@@ -49,24 +53,20 @@ const Login = () => {
     console.log("Login Data:", loginData);
 
     setTimeout(() => {
-      if (
-        !isValidEmail(loginData.email) ||
-        !isValidPassword(loginData.password)
-      ) {
-        setLoading(false);
-        setErrorEmail(true);
-        setErrorPassword(true);
-      }
       if (!isValidEmail(loginData.email)) {
         setLoading(false);
         setErrorEmail(true);
-      } else if (!isValidPassword(loginData.password)) {
+      }
+      if (!isValidPassword(loginData.password)) {
         setLoading(false);
         setErrorPassword(true);
-      } else {
+      } 
+
+      if(isValidEmail(loginData.email) && isValidPassword(loginData.password)) {
         setLoading(false);
         alert("Login Successful");
       }
+
     }, 2000);
   };
 
@@ -130,9 +130,7 @@ const Login = () => {
                   </button>
                 </div>
 
-                {/* <span onClick={handleTogglePassword}>
-                    
-                  </span> */}
+               
 
                 {errorPassword && (
                   <p style={{ color: "red" }} className="text-sm italic">
@@ -149,7 +147,7 @@ const Login = () => {
                     <img
                       class="h-12 w-12"
                       src="https://icons8.com/preloaders/preloaders/1488/Iphone-spinner-2.gif"
-                      alt=""
+                      alt="loader"
                     />
                   </>
                 ) : (
