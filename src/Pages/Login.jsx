@@ -1,63 +1,85 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import EntryField from "../Components/EntryField";
 import ErrorAtEntryField from "../Components/ErrorAtEntryField";
 import CountryLanguage from "../Components/CountryLanguage";
 import ButtonLoader from "../Components/ButtonLoader";
+import { isValidEmail, isValidPassword } from "../Js/validator";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  const [errorEmail, setErrorEmail] = useState(false);
-  const [errorPassword, setErrorPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  //{email,pass}  Object.hasown(email)
+  const debounce = (func, delay) => {
+    let timerOut;
+
+    return function (...args) {
+      clearTimeout(timerOut);
+      timerOut = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  };
+
+  // const handleOnChange = (e)=>{
+  //   debounce((e) => {
+  //     setLoginData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
+  //   }, 500)
+  // }
+
+  // const handleOnChange = useCallback(
+  //   debounce((e) => {
+  //     setLoginData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
+  //   }, 500),
+  //   []
+  // );
+
+  const clearError = (fieldName) => {
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      delete updatedErrors[fieldName];
+      return updatedErrors;
+    });
+  };
 
   const handleOnChange = (e) => {
-    const { name, value } = e.target;
     setLoginData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [e.target.name]: e.target.value,
     }));
+    clearError(e.target.name);
   };
 
-  const isValidEmail = (email) => {
-    console.log(email);
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    return emailRegex.test(email);
+  const setError = (fieldName, errorMessage) => {
+    setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: errorMessage }));
   };
-
-  const isValidPassword = (password) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return passwordRegex.test(password);
-  };
-
   const handleLogin = (e) => {
     e.preventDefault();
+    const { email, password } = loginData;
+    const validEmail = isValidEmail(email);
+    const validPassword = isValidPassword(password);
 
     setLoading(true);
 
-    console.log("Login Data:", loginData);
-
     setTimeout(() => {
-      if (!isValidEmail(loginData.email)) {
-        setLoading(false);
-        setErrorEmail(true);
-      }
-      if (!isValidPassword(loginData.password)) {
-        setLoading(false);
-        setErrorPassword(true);
+      if (!validEmail) {
+        setError("email", "email is not valid!");
       }
 
-      if (
-        isValidEmail(loginData.email) &&
-        isValidPassword(loginData.password)
-      ) {
-        setLoading(false);
-        alert(
-          `Login Successful Email : ${loginData.email} password : ${loginData.password} `
+      if (!validPassword) {
+        setError(
+          "password",
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and onedigit."
         );
       }
+
+      if (validEmail && validPassword) {
+        setLoading(false);
+        alert(`Login Successful Email : ${email} password : ${password} `);
+        setLoginData({ email: "", password: "" });
+      }
+      setLoading(false);
     }, 2000);
   };
 
@@ -78,16 +100,17 @@ const Login = () => {
             <div className="mb-6">
               <EntryField
                 label={"Email"}
-                required={true}
+                required
                 id={"email"}
                 name={"email"}
                 type={"text"}
                 value={loginData.email}
-                onChange={handleOnChange}
-                error={errorEmail}
+                onChange={(e) => handleOnChange(e)}
+                error={errors.hasOwnProperty("email")}
               />
-              {errorEmail && (
-                <ErrorAtEntryField errorMessage={"email is not valid"} />
+
+              {errors.hasOwnProperty("email") && (
+                <ErrorAtEntryField errorMessage={errors.email} />
               )}
             </div>
 
@@ -98,17 +121,14 @@ const Login = () => {
                 name={"password"}
                 type={"password"}
                 value={loginData.password}
-                error={errorPassword}
-                onChange={handleOnChange}
+                error={errors.hasOwnProperty("password")}
+                onChange={(e) => handleOnChange(e)}
                 required
               />
 
-              {errorPassword && (
-                <ErrorAtEntryField
-                  errorMessage={`Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and onedigit.`}
-                />
+              {errors.hasOwnProperty("password") && (
+                <ErrorAtEntryField errorMessage={errors.password} />
               )}
-
             </div>
 
             <div className="relative w-full mt-6">
