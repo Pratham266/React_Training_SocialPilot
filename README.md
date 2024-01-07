@@ -1,2 +1,2 @@
-# React_Training_SocilPilot
+# React_Training_SocialPilot
 React Training at SocialPilot
