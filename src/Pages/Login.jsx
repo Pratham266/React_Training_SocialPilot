@@ -3,6 +3,8 @@ import EntryField from "../Components/EntryField";
 import ErrorAtEntryField from "../Components/ErrorAtEntryField";
 import CountryLanguage from "../Components/CountryLanguage";
 import ButtonLoader from "../Components/ButtonLoader";
+import Button from "../Components/Button";
+
 import { isValidEmail, isValidPassword } from "../Js/validator";
 
 const Login = () => {
@@ -55,7 +57,6 @@ const Login = () => {
     setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: errorMessage }));
   };
   const handleLogin = (e) => {
-    e.preventDefault();
     const { email, password } = loginData;
     const validEmail = isValidEmail(email);
     const validPassword = isValidPassword(password);
@@ -80,7 +81,7 @@ const Login = () => {
         setLoginData({ email: "", password: "" });
       }
       setLoading(false);
-    }, 2000);
+    }, 500);
   };
 
   return (
@@ -132,29 +133,14 @@ const Login = () => {
             </div>
 
             <div className="relative w-full mt-6">
-              {loading ? (
-                <>
-                  <ButtonLoader />
-                </>
-              ) : (
-                <>
-                  <button
-                    type="submit"
-                    className={`${
-                      loginData.email === "" || loginData.password === ""
+              {loading ? (<ButtonLoader />) : 
+              (    
+                 <Button buttonText={"Sign in"} classAttribute={loginData.email === "" || loginData.password === ""
                         ? "bg-blue-100 cursor-not-allowed"
-                        : "bg-blue-600"
-                    }  text-white font-semibold px-6 w-28 h-8 border rounded-sm`}
-                    onClick={handleLogin}
-                    disabled={
-                      loginData.email === "" || loginData.password === ""
-                    }
-                  >
-                    <div className="flex items-center justify-center">
-                      Sign in
-                    </div>
-                  </button>
-                </>
+                        : "bg-blue-600"}
+                        disabled={loginData.email === "" || loginData.password === ""}
+                        handleClick={handleLogin}
+                        />             
               )}
 
               <div className="text-blue-500 absolute inset-y-0 right-0 flex items-center px-4">
