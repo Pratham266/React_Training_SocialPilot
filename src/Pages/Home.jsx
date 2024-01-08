@@ -1,8 +1,16 @@
 import { faQuoteLeft, faQuoteRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Button from "../Components/Button";
+import { logoutUser } from "../redux";
 
 const Home = () => {
+  const user = useSelector((state)=>state.user)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  // const [user,setUser] = useState({email:"",password:""})
   const [joke, setJoke] = useState([]);
 
   const formatTimeAndDate = (d) => {
@@ -30,31 +38,47 @@ const Home = () => {
 
       const data = await res.json();
       if (data) {
-        console.log("Data : ", data);
+        // console.log("Data : ", data);
       }
     } catch (error) {
       console.log("error : ", error);
     }
   };
+  const handleLogout =()=>{
+    
+    dispatch(logoutUser())
+    navigate("/login")
+
+    console.log("USER : ",user);
+    alert("Logout successful")
+  }
 
   useEffect(() => {
-    getJoke();
+    console.log("USER : ",user);
+   
+    if(!user.email || !user.password){
+      alert("Please Login First!")
+      navigate("/login")
+    }
+
+    // getJoke();
   }, []);
   return (
     <>
       <div className="grid grid-cols-12 gap-1 bg-[#eff6ff]  h-screen">
         {/* Header */}
-        <div className="header col-span-12 bg-[#93c5fd] ">
-          <h1 className="mb-4 text-4xl font-extrabold text-center	 leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
-            CHUCK NORRIS JOKES
-          </h1>
-        </div>
+        
+        <div className="header col-span-12 bg-[#172554] flex">
+          <h2 className="mb-2 text-center	pt-2 leading-none tracking-tight text-white md:text-4xl lg:text-6xl">Welcome, {user && user.email}</h2>
+          <Button classAttribute={"text-center m-8"} buttonText={"Logout"} handleClick={handleLogout}/>
 
+        </div>
+        
         {/*Menu items at left-sidebar*/}
-        <div className="col-span-12 rounded-lg border  bg-[#bfdbfe] p-2 sm:col-span-4">
+        <div className="col-span-12 rounded-lg border  bg-[#172554] p-2 sm:col-span-4">
           <label
-            for="large"
-            className="block mb-2 text-base font-medium text-gray-900"
+            htmlFor="large"
+            className="block mb-2 text-base  text-center font-medium text-white"
           >
             Select Category
           </label>
@@ -71,7 +95,7 @@ const Home = () => {
         </div>
 
         {/* Main Content at right-sidebar */}
-        <div className="col-span-12 rounded-lg border  bg-[#bfdbfe] p-16 sm:col-span-8">
+        <div className="col-span-12 rounded-lg border  bg-[#172554] p-16 sm:col-span-8">
           
         
 <div className="w-full p-4  bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
@@ -88,9 +112,9 @@ const Home = () => {
 </div>
 
         </div>
-        <div className="footer col-span-12  border  bg-[#93c5fd] py-2">
+        {/* <div className="footer col-span-12  border  bg-[#93c5fd] py-2">
           Footer
-        </div>
+        </div> */}
       </div>
     </>
   );

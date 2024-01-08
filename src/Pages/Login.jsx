@@ -6,23 +6,53 @@ import ButtonLoader from "../Components/ButtonLoader";
 import Button from "../Components/Button";
 
 import { isValidEmail, isValidPassword } from "../Js/validator";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../redux";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const user = useSelector(state=>state.user)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
 
-  const debounce = (func, delay) => {
-    let timerOut;
+  // const debounce = (func, delay) => {
+  //   let timerOut;
 
-    return function (...args) {
-      clearTimeout(timerOut);
-      timerOut = setTimeout(() => {
-        func.apply(this, args);
-      }, delay);
-    };
+  //   return function (...args) {
+  //     clearTimeout(timerOut);
+  //     timerOut = setTimeout(() => {
+  //       func.apply(this, args);
+  //     }, delay);
+  //   };
+  // };
+
+  // const debounce = function(fn,d){
+  //   let timer;
+  //   return function(){
+  //     let context = this;
+  //     let args = arguments;
+  //     clearTimeout(timer);
+
+  //     timer = setTimeout(()=>{
+  //       fn.apply(context,arguments);
+  //     },d)
+  //   }
+  // }
+
+  const handleOnChange = (e) => {
+    setLoginData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
+    clearError(e.target.name);
   };
+
+  // const betterFunction = debounce(handleOnChange,300);
 
   // const handleOnChange = (e)=>{
   //   debounce((e) => {
@@ -45,14 +75,7 @@ const Login = () => {
     });
   };
 
-  const handleOnChange = (e) => {
-    setLoginData((prevData) => ({
-      ...prevData,
-      [e.target.name]: e.target.value,
-    }));
-    clearError(e.target.name);
-  };
-
+  
   const setError = (fieldName, errorMessage) => {
     setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: errorMessage }));
   };
@@ -79,6 +102,8 @@ const Login = () => {
         setLoading(false);
         alert(`Login Successful Email : ${email} password : ${password} `);
         setLoginData({ email: "", password: "" });
+        dispatch(loginUser(email,password));
+        navigate("/")
       }
       setLoading(false);
     }, 500);
@@ -106,7 +131,7 @@ const Login = () => {
                 name={"email"}
                 type={"text"}
                 value={loginData.email}
-                onChange={(e) => handleOnChange(e)}
+                onChange={handleOnChange}
                 error={errors.hasOwnProperty("email")}
               />
 
@@ -123,7 +148,7 @@ const Login = () => {
                 type={"password"}
                 value={loginData.password}
                 error={errors.hasOwnProperty("password")}
-                onChange={(e) => handleOnChange(e)}
+                onChange={handleOnChange}
                 required
               />
 
