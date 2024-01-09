@@ -10,7 +10,8 @@ const EntryField = ({
   value,
   error,
   onChange,
-  required
+  required,
+  ref
 }) => {
 
     const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +37,7 @@ const EntryField = ({
         autoComplete="off"
         value={value}
         onChange={onChange}
+        ref={ref}
       />
 
       {isPassword &&(<button

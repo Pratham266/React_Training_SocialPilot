@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import EntryField from "../Components/EntryField";
 import ErrorAtEntryField from "../Components/ErrorAtEntryField";
 import CountryLanguage from "../Components/CountryLanguage";
@@ -6,53 +6,64 @@ import ButtonLoader from "../Components/ButtonLoader";
 import Button from "../Components/Button";
 
 import { isValidEmail, isValidPassword } from "../Js/validator";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { loginUser } from "../redux";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const user = useSelector(state=>state.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const [loginData, setLoginData] = useState({ email: "", password: "" });
+
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
 
-  // const debounce = (func, delay) => {
-  //   let timerOut;
 
-  //   return function (...args) {
-  //     clearTimeout(timerOut);
-  //     timerOut = setTimeout(() => {
-  //       func.apply(this, args);
-  //     }, delay);
-  //   };
-  // };
+    // const debounce = function(fn,d){
+    //   let timer;
+    //   return function(){
+    //     let context = this;
+    //     let args = arguments;
+    //     clearTimeout(timer);
 
-  // const debounce = function(fn,d){
-  //   let timer;
-  //   return function(){
-  //     let context = this;
-  //     let args = arguments;
-  //     clearTimeout(timer);
-
-  //     timer = setTimeout(()=>{
-  //       fn.apply(context,arguments);
-  //     },d)
-  //   }
-  // }
+    //     timer = setTimeout(()=>{
+    //       fn.apply(context,arguments);
+    //     },d)
+    //   }
+    // }
 
   const handleOnChange = (e) => {
+
+    // if (e.target.name === 'email') {
+    //   console.log("what is : ,",emailInputRef.current);
+    //   console.log("email ref",emailInputRef.current.value);
+    //   emailInputRef.current = e.target.value;
+    // } else if (e.target.name === 'password') {
+    //   passwordInputRef.current = e.target.value;
+    // }
+
     setLoginData((prevData) => ({
       ...prevData,
       [e.target.name]: e.target.value,
     }));
+
+    // return debounce(() => {
+    //   setLoginData((prevData) => ({
+    //     ...prevData,
+    //     // [e.target.name]: e.target.value,
+    //     email:emailInputRef,
+    //     password:passwordInputRef
+    //   }));
+    // }, 1000);
+
     clearError(e.target.name);
   };
 
-  // const betterFunction = debounce(handleOnChange,300);
 
   // const handleOnChange = (e)=>{
   //   debounce((e) => {
@@ -60,12 +71,6 @@ const Login = () => {
   //   }, 500)
   // }
 
-  // const handleOnChange = useCallback(
-  //   debounce((e) => {
-  //     setLoginData((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
-  //   }, 500),
-  //   []
-  // );
 
   const clearError = (fieldName) => {
     setErrors((prevErrors) => {
@@ -103,7 +108,7 @@ const Login = () => {
         alert(`Login Successful Email : ${email} password : ${password} `);
         setLoginData({ email: "", password: "" });
         dispatch(loginUser(email,password));
-        navigate("/")
+        navigate("/youtube")
       }
       setLoading(false);
     }, 500);
@@ -132,6 +137,7 @@ const Login = () => {
                 type={"text"}
                 value={loginData.email}
                 onChange={handleOnChange}
+                ref={emailInputRef}
                 error={errors.hasOwnProperty("email")}
               />
 
@@ -149,6 +155,7 @@ const Login = () => {
                 value={loginData.password}
                 error={errors.hasOwnProperty("password")}
                 onChange={handleOnChange}
+                ref={passwordInputRef}
                 required
               />
 
